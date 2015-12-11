@@ -205,10 +205,24 @@ public class DesTest {
             Key key = new Key(0x0101010101010101L, Des.LITTLE_ENDIAN);
             for (int i = 0; i < VARIABLE_PLAINTEXT.length; i++) {
                 BitSet plain = swapDirection(BitSet.valueOf(new long[]{VARIABLE_PLAINTEXT[i][0]}), Block.LENGTH);
-                BitSet encrypted = swapDirection(new Des().encrypt(plain, key), Block.LENGTH);
-                if (VARIABLE_PLAINTEXT[i][1] != (encrypted.cardinality() == 0 ? 0x0L : encrypted.toLongArray()[0])) {
+                BitSet expectation = swapDirection(BitSet.valueOf(new long[]{VARIABLE_PLAINTEXT[i][1]}), Block.LENGTH);
+
+                BitSet encrypted = new Des().encrypt(plain, key);
+                if (!expectation.equals(encrypted)) {
                     testFailed = true;
-                    System.out.println(curTestName + " failed on iteration" + i);
+                    System.out.println(curTestName + " failed expected cypher on iteration" + i);
+                }
+
+                BitSet decrypted = new Des().decrypt(encrypted, key);
+                if (!plain.equals(decrypted)) {
+                    testFailed = true;
+                    System.out.println(curTestName + " failed decryption on iteration" + i);
+                }
+
+                BitSet encrypted2x = new Des().encrypt(encrypted, key);
+                if (!plain.equals(encrypted2x)) {
+                    testFailed = true;
+                    System.out.println(curTestName + " failed weak key on iteration" + i);
                 }
             }
             if (!testFailed)
@@ -221,10 +235,18 @@ public class DesTest {
             BitSet plain = new BitSet(Block.LENGTH);
             for (int i = 0; i < VARIABLE_KEY.length; i++) {
                 Key key = new Key(VARIABLE_KEY[i][0], Des.LITTLE_ENDIAN);
-                BitSet encrypted = swapDirection(new Des().encrypt(plain, key), Block.LENGTH);
-                if (VARIABLE_KEY[i][1] != (encrypted.cardinality() == 0 ? 0x0L : encrypted.toLongArray()[0])) {
+                BitSet expectation = swapDirection(BitSet.valueOf(new long[]{VARIABLE_KEY[i][1]}), Block.LENGTH);
+
+                BitSet encrypted = new Des().encrypt(plain, key);
+                if (!expectation.equals(encrypted)) {
                     testFailed = true;
-                    System.out.println(curTestName + " failed on iteration" + i);
+                    System.out.println(curTestName + " failed expected cypher on iteration" + i);
+                }
+
+                BitSet decrypted = new Des().decrypt(encrypted, key);
+                if (!plain.equals(decrypted)) {
+                    testFailed = true;
+                    System.out.println(curTestName + " failed decryption on iteration" + i);
                 }
             }
             if (!testFailed)
@@ -237,10 +259,18 @@ public class DesTest {
             BitSet plain = new BitSet(Block.LENGTH);
             for (int i = 0; i < PERMUTATION_OPERATION.length; i++) {
                 Key key = new Key(PERMUTATION_OPERATION[i][0], Des.LITTLE_ENDIAN);
-                BitSet encrypted = swapDirection(new Des().encrypt(plain, key), Block.LENGTH);
-                if (PERMUTATION_OPERATION[i][1] != (encrypted.cardinality() == 0 ? 0x0L : encrypted.toLongArray()[0])) {
+                BitSet expectation = swapDirection(BitSet.valueOf(new long[]{PERMUTATION_OPERATION[i][1]}), Block.LENGTH);
+
+                BitSet encrypted = new Des().encrypt(plain, key);
+                if (!expectation.equals(encrypted)) {
                     testFailed = true;
-                    System.out.println(curTestName + " failed on iteration" + i);
+                    System.out.println(curTestName + " failed expected cypher on iteration" + i);
+                }
+
+                BitSet decrypted = new Des().decrypt(encrypted, key);
+                if (!plain.equals(decrypted)) {
+                    testFailed = true;
+                    System.out.println(curTestName + " failed decryption on iteration" + i);
                 }
             }
             if (!testFailed)
@@ -251,17 +281,38 @@ public class DesTest {
             boolean testFailed = false;
             String curTestName = "Substitution Table Known Answer Test";
             for (int i = 0; i < SUBSTITUTION_OPERATION.length; i++) {
-                BitSet plain = swapDirection(BitSet.valueOf(new long[]{SUBSTITUTION_OPERATION[i][1]}), Block.LENGTH);
                 Key key = new Key(SUBSTITUTION_OPERATION[i][0], Des.LITTLE_ENDIAN);
-                BitSet encrypted = swapDirection(new Des().encrypt(plain, key), Block.LENGTH);
-                if (SUBSTITUTION_OPERATION[i][2] != (encrypted.cardinality() == 0 ? 0x0L : encrypted.toLongArray()[0])) {
+                BitSet plain = swapDirection(BitSet.valueOf(new long[]{SUBSTITUTION_OPERATION[i][1]}), Block.LENGTH);
+                BitSet expectation = swapDirection(BitSet.valueOf(new long[]{SUBSTITUTION_OPERATION[i][2]}), Block.LENGTH);
+
+                BitSet encrypted = new Des().encrypt(plain, key);
+                if (!expectation.equals(encrypted)) {
                     testFailed = true;
-                    System.out.println(curTestName + " failed on iteration" + i);
+                    System.out.println(curTestName + " failed expected cypher on iteration" + i);
+                }
+
+                BitSet decrypted = new Des().decrypt(encrypted, key);
+                if (!plain.equals(decrypted)) {
+                    testFailed = true;
+                    System.out.println(curTestName + " failed decryption on iteration" + i);
                 }
             }
             if (!testFailed)
                 System.out.println(curTestName + " was completed successfully on " +
                         SUBSTITUTION_OPERATION.length + " iterations.");
+        }
+        {
+            String curTestName = "Custom String Test";
+            String plain = "Тестовая строка с восклицанием!";
+//            Key key = new Key(new Random().nextLong(), Des.BIG_ENDIAN);
+            Key key = new Key(0x30b80903617c73dbL, Des.BIG_ENDIAN);
+            String encrypted = new Des().encryptString(plain, key);
+            String decrypted = new Des().decryptString(encrypted, key);
+            System.out.println(curTestName + " result:");
+            System.out.println("\tinput:  \t" + plain);
+            System.out.println("\tkey:    \t" + key);
+            System.out.println("\tencoded:\t" + encrypted);
+            System.out.println("\tdecoded:\t" + decrypted);
         }
     }
 }

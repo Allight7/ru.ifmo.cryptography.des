@@ -47,7 +47,9 @@ public class Key {
     private BitSet di;
 
     public Key(long key, boolean inverse) {
-        this.key = inverse ? swapDirection(BitSet.valueOf(new long[]{key}), LENGTH) : BitSet.valueOf(new long[]{key});
+        this.key = inverse ?
+                swapDirection(BitSet.valueOf(new long[]{key}), LENGTH) :
+                BitSet.valueOf(new long[]{key});
         this.ci = new BitSet(C_D_LENGTH);
         this.di = new BitSet(C_D_LENGTH);
         for (int i = 0; i < C_D_LENGTH; i++) {
@@ -137,4 +139,12 @@ public class Key {
         return key.get(fromIndex, toIndex);
     }
 
+    @Override
+    public String toString() {
+        return String.format("0x%16s",
+                Long.toHexString(key.cardinality() == 0 ?
+                        0x0L :
+                        key.toLongArray()[0])
+        ).replace(' ', '0');
+    }
 }
