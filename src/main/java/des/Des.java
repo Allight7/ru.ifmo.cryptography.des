@@ -19,13 +19,6 @@ public class Des {
             60, 52, 44, 36, 28, 20, 12, 4, 62, 54, 46, 38, 30, 22, 14, 6
     };
 
-    private static final int[] FINAL_PERMUTATION_TABLE = {
-            57, 49, 41, 33, 25, 17,  9, 1, 59, 51, 43, 35, 27, 19, 11, 3,
-            61, 53, 45, 37, 29, 21, 13, 5, 63, 55, 47, 39, 31, 23, 15, 7,
-            56, 48, 40, 32, 24, 16,  8, 0, 58, 50, 42, 34, 26, 18, 10, 2,
-            60, 52, 44, 36, 28, 20, 12, 4, 62, 54, 46, 38, 30, 22, 14, 6
-    };
-
     private Block initialPermutation(Block inputBlock) {
         BitSet result = new BitSet(Block.LENGTH);
         for (int i = 0; i < Block.LENGTH; ++i)
@@ -86,7 +79,7 @@ public class Des {
     private PairLR feistelCell(PairLR tPrev, ExtHalfBlock key) {
         HalfBlock lNext = tPrev.getRight();
         BitSet rNext = tPrev.getLeft().get();
-        rNext.xor(feistelEncrypt(tPrev.getRight(),key).get());
+        rNext.xor(feistelEncrypt(tPrev.getRight(), key).get());
 
         return new PairLR(lNext, new HalfBlock(rNext));
     }
@@ -94,9 +87,9 @@ public class Des {
     private PairLR feistelCellInverse(PairLR tNext, ExtHalfBlock key) {
         HalfBlock rPrev = tNext.getLeft();
         BitSet lPrev = tNext.getRight().get();
-        lPrev.xor(feistelEncrypt(tNext.getLeft(),key).get());
+        lPrev.xor(feistelEncrypt(tNext.getLeft(), key).get());
 
-        return new PairLR(new HalfBlock(lPrev),rPrev);
+        return new PairLR(new HalfBlock(lPrev), rPrev);
     }
 
     private HalfBlock feistelEncrypt(HalfBlock rPrev, ExtHalfBlock key) {
@@ -151,23 +144,24 @@ public class Des {
         return bytesToString(outputBitSet.toByteArray());
     }
 
-    protected static BitSet swapDirection(BitSet in, int size){
+    protected static BitSet swapDirection(BitSet in, int size) {
         BitSet result = new BitSet(size);
-        for (int i = 0, j = size-1; j >= 0; i++, j--)
-            result.set(i,in.get(j));
+        for (int i = 0, j = size - 1; j >= 0; i++, j--)
+            result.set(i, in.get(j));
         return result;
     }
 
-    public static void printHex (String name, BitSet bs, boolean reverse, int BitSize){
-        if(reverse)
-            bs = swapDirection(bs,BitSize);
-        String s = String.format("%" + BitSize/4 + "s", Long.toHexString(bs.cardinality() == 0 ? 0x0L : bs.toLongArray()[0])).replace(' ', '0');
+    public static void printHex(String name, BitSet bs, boolean reverse, int BitSize) {
+        if (reverse)
+            bs = swapDirection(bs, BitSize);
+        String s = String.format("%" + BitSize / 4 + "s", Long.toHexString(bs.cardinality() == 0 ? 0x0L : bs.toLongArray()[0])).replace(' ', '0');
 
         System.out.println(name + " = " + s);
     }
-    public static void printBin (String name, BitSet bs, boolean reverse, int bitSize){
-        if(reverse)
-            bs = swapDirection(bs,bitSize);
+
+    public static void printBin(String name, BitSet bs, boolean reverse, int bitSize) {
+        if (reverse)
+            bs = swapDirection(bs, bitSize);
         String s = String.format("%" + bitSize + "s", Long.toBinaryString(bs.cardinality() == 0 ? 0x0L : bs.toLongArray()[0])).replace(' ', '0');
         System.out.println(name + " = " + s);
     }

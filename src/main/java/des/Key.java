@@ -47,7 +47,7 @@ public class Key {
     private BitSet di;
 
     public Key(long key, boolean inverse) {
-        this.key = inverse ? swapDirection(BitSet.valueOf(new long[]{key}),LENGTH) : BitSet.valueOf(new long[]{key});
+        this.key = inverse ? swapDirection(BitSet.valueOf(new long[]{key}), LENGTH) : BitSet.valueOf(new long[]{key});
         this.ci = new BitSet(C_D_LENGTH);
         this.di = new BitSet(C_D_LENGTH);
         for (int i = 0; i < C_D_LENGTH; i++) {
@@ -83,7 +83,7 @@ public class Key {
     }
 
     protected ExtHalfBlock nextSubKey() {
-        assert(iteration < Des.FEISTEL_CYCLES_NUM);
+        assert (iteration < Des.FEISTEL_CYCLES_NUM);
         ci = rotateLeft(ci, ROTATIONS_TABLE[iteration]);
         di = rotateLeft(di, ROTATIONS_TABLE[iteration]);
         iteration = (iteration + 1) % Des.FEISTEL_CYCLES_NUM;
@@ -96,7 +96,7 @@ public class Key {
     }
 
     protected ExtHalfBlock prevSubKey() {
-        assert(iteration < Des.FEISTEL_CYCLES_NUM);
+        assert (iteration < Des.FEISTEL_CYCLES_NUM);
         BitSet subKey = new BitSet(ExtHalfBlock.LENGTH);
         for (int i = 0; i < ExtHalfBlock.LENGTH; i++) {
             int j = PERMUTED_CHOICE_2_TABLE[i];
